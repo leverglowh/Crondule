@@ -1,7 +1,7 @@
 import sqlite3
 import asyncio
 import os
-from telegram import Update, ReplyKeyboardMarkup
+from telegram import ReplyKeyboardRemove, Update, ReplyKeyboardMarkup
 from telegram.ext import (
     ApplicationBuilder, CommandHandler, MessageHandler, filters,
     ContextTypes, ConversationHandler
@@ -118,7 +118,8 @@ async def handle_timezone_choice(update: Update, context: ContextTypes.DEFAULT_T
         return TIMEZONE_CHOICE
 
     save_timezone_for_chat(chat_id, chosen)
-    await update.message.reply_text(f"✅ Timezone set to {chosen}.")
+    markup = ReplyKeyboardRemove()
+    await update.message.reply_text(f"✅ Timezone set to {chosen}.", reply_markup=markup)
     return ConversationHandler.END
 
 # My commands
