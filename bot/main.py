@@ -42,7 +42,7 @@ BOT_TOKEN = os.getenv('BOT_TOKEN', envData.get('BOT_TOKEN'))
 if not BOT_TOKEN:
     raise ValueError("BOT_TOKEN is required")
 
-DB_NAME = 'crondule.db'
+DB_NAME = 'data/crondule.db'
 
 # Scheduler setup
 scheduler = BackgroundScheduler(timezone=pytz.utc)

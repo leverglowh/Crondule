@@ -1,7 +1,8 @@
 services:
   crondule:
     container_name: crondule
-    build:
-      context: .
+    image: ghcr.io/leverglowh/crondulebot:main
     env_file: .env
     restart: unless-stopped
+    volumes:
+      - ./data:/app/data

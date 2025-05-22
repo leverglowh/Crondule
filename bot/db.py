@@ -2,7 +2,7 @@ import sqlite3
 
 import pytz
 
-DB_NAME = "crondule.db"
+DB_NAME = "data/crondule.db"
 
 def init_db():
     conn = sqlite3.connect(DB_NAME)
