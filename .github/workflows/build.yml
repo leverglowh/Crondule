@@ -1,4 +1,4 @@
-name: Deploy Bot to DigitalOcean
+name: build docker image and push to ghcr
 
 on:
   push:
