@@ -257,8 +257,9 @@ async def capture_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         save_job_to_db(job_id, chat_id, mode, run_time.isoformat(), message, run_time.isoformat())
     else:  # cron
+        chat_tz = get_timezone_for_chat(chat_id)
         minute, hour, dom, month, dow = schedule_str.split()
-        trigger = CronTrigger(minute=minute, hour=hour, day=dom, month=month, day_of_week=dow)
+        trigger = CronTrigger(minute=minute, hour=hour, day=dom, month=month, day_of_week=dow, timezone=chat_tz)
         scheduler.add_job(
             send_message,
             trigger=trigger,
