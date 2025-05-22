@@ -1,0 +1,44 @@
+name: Deploy Bot to DigitalOcean
+
+on:
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/${{ vars.IMAGE_NAME }}
+
+jobs:
+  deployment:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Deploy to DO droplet
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.DROPLET_HOST }}
+          username: ${{ secrets.DROPLET_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Login to ghcr.io
+            echo ${{ secrets.GITHUB_TOKEN }} | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
+            
+            # Create/update .env file
+            mkdir -p /root/crondule
+            cd /root/crondule
+            echo "${{ secrets.ENV_FILE }}" > .env
+            
+            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+
+            docker stop crondule || true
+            docker rm crondule || true
+            
+            docker run -d \
+              --name crondule \
+              --restart unless-stopped \
+              --env-file .env \
+              ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            
+            docker ps | grep crondule
