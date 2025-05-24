@@ -39,7 +39,7 @@ You can self host the bot by using this docker compose
 services:
   crondule:
     container_name: crondule
-    image: ghcr.io/leverglowh/crondulebot:main
+    image: ghcr.io/leverglowh/crondulebot:latest
     restart: unless-stopped
     environment:
       - BOT_TOKEN=your_bot_token # Get it from bot father
