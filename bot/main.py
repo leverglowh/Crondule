@@ -16,7 +16,8 @@ from db import init_db, save_timezone_for_chat, get_timezone_for_chat
 import pytz
 import logging
 
-logging.basicConfig(level=logging.ERROR)
+logging.basicConfig(level=logging.INFO)
+logging.getLogger("httpx").setLevel(logging.WARNING)
 
 TIMEZONE_CHOICE = 1
 TIMEZONES = TIMEZONES = ["UTC", "Europe/London", "Europe/Rome", "America/New_York", "America/Los_Angeles", "Asia/Shanghai", "Asia/Tokyo"]
@@ -75,6 +76,7 @@ def load_jobs_from_db():
                     name=job_type,
                     id=job_id
                 )
+                logging.info(f"Loaded scheduled job {job_id} for chat {chat_id} at {run_time}")
             elif job_type == "cron":
                 cron = CronTrigger.from_crontab(trigger)
                 scheduler.add_job(
@@ -84,6 +86,7 @@ def load_jobs_from_db():
                     name=job_type,
                     id=job_id
                 )
+                logging.info(f"Loaded cron job {job_id} for chat {chat_id} with trigger {trigger}")
 
 # Schedule message sender
 def send_message(chat_id, message, type=None, job_id=None):
@@ -288,6 +291,8 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # Bot setup
 def main():
     init_db()
+
+    load_jobs_from_db()
     
     app = ApplicationBuilder().token(BOT_TOKEN).post_init(set_my_commands).build()
 
