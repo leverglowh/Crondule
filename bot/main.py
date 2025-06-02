@@ -67,6 +67,7 @@ def load_jobs_from_db():
     with sqlite3.connect(DB_NAME) as conn:
         rows = conn.execute("SELECT job_id, chat_id, type, trigger, message FROM jobs").fetchall()
         for job_id, chat_id, job_type, trigger, message in rows:
+            chat_tz = get_timezone_for_chat(chat_id)
             if job_type == "schedule":
                 run_time = datetime.fromisoformat(trigger)
                 scheduler.add_job(
@@ -78,7 +79,7 @@ def load_jobs_from_db():
                 )
                 logging.info(f"Loaded scheduled job {job_id} for chat {chat_id} at {run_time}")
             elif job_type == "cron":
-                cron = CronTrigger.from_crontab(trigger)
+                cron = CronTrigger.from_crontab(trigger, chat_tz)
                 scheduler.add_job(
                     send_message,
                     trigger=cron,
